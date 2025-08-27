@@ -8,14 +8,24 @@
   <link rel="stylesheet" href="assets/css/kiosk.css">
 </head>
 <body class="kiosk kiosk-wait">
-  <div class="wrap">
-    <div class="card">
+  <div class="kiosk-app">
+    <header class="kiosk-header">
+      <div class="kiosk-container">
+        <div class="kiosk-brand"><span class="kiosk-dot"></span> Moroccan Café</div>
+        <div class="kiosk-steps" style="margin-left:auto;">
+          <div class="kiosk-step is-active">Paiement</div>
+        </div>
+      </div>
+    </header>
+    <div class="wrap">
+      <div class="card kiosk-card">
       <div>Numéro de commande</div>
       <div class="num">#<?= (int)$orderNumber ?></div>
       <div class="muted" style="margin-top:8px;">Montant: <?= Format::money((float)$total) ?></div>
       <div class="spinner"></div>
       <div>Paiement par carte en cours… Veuillez suivre les instructions sur le terminal.</div>
-      <div style="margin-top:12px;"><a class="back" href="?r=kiosk/welcome">Retour à l'accueil</a></div>
+      <div style="margin-top:12px;"><a class="back kiosk-btn kiosk-btn-ghost" href="?r=kiosk/welcome">Retour à l'accueil</a></div>
+      </div>
     </div>
   </div>
   <script>
@@ -69,3 +79,4 @@
   </script>
 </body>
 </html>
+

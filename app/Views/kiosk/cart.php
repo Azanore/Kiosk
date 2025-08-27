@@ -8,20 +8,29 @@
   <link rel="stylesheet" href="assets/css/kiosk.css">
 </head>
 <body class="kiosk">
-  <header class="kiosk">
-    Panier
-    <a class="back" href="?r=kiosk/categories">Continuer les achats</a>
-  </header>
-  <div class="row">
-    <table>
+  <div class="kiosk-app">
+    <header class="kiosk-header">
+      <div class="kiosk-container">
+        <div class="kiosk-brand"><span class="kiosk-dot"></span> Moroccan Café</div>
+        <div class="kiosk-steps" style="margin-left:auto;">
+          <a class="kiosk-step" href="?r=kiosk/categories">Continuer les achats</a>
+          <div class="kiosk-step is-active">Panier</div>
+        </div>
+      </div>
+    </header>
+    <div class="kiosk-container">
+      <div class="row">
+        <div class="card kiosk-card">
+          <div class="kiosk-title-lg" style="margin-bottom:10px;">Votre panier</div>
+          <table class="kiosk-table">
       <thead>
         <tr><th>Article</th><th>Prix</th><th>Qté</th><th>Total</th><th></th></tr>
       </thead>
       <tbody>
       <?php if (empty($items)): ?>
-        <tr><td colspan="5" class="muted">Votre panier est vide.</td></tr>
+        <tr class="kiosk-row"><td colspan="5" class="muted">Votre panier est vide.</td></tr>
       <?php else: foreach ($items as $it): ?>
-        <tr>
+        <tr class="kiosk-row">
           <td><?= htmlspecialchars($it['name'], ENT_QUOTES, 'UTF-8') ?></td>
           <td><?= Format::money((float)$it['price']) ?></td>
           <td class="qty">
@@ -34,12 +43,15 @@
         </tr>
       <?php endforeach; endif; ?>
       </tbody>
-    </table>
-    <div class="total">Total: <?= Format::money((float)$total) ?></div>
-    <div class="actions">
-      <?php if (!empty($items)): ?>
-        <a class="btn" href="?r=kiosk/checkout">Passer au paiement</a>
-      <?php endif; ?>
+          </table>
+          <div class="total kiosk-title-md" style="margin-top:12px;">Total: <?= Format::money((float)$total) ?></div>
+          <div class="actions" style="margin-top:10px;">
+        <?php if (!empty($items)): ?>
+          <a class="btn kiosk-btn kiosk-btn-primary" href="?r=kiosk/checkout">Passer au paiement</a>
+        <?php endif; ?>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <script>
@@ -52,3 +64,4 @@
   </script>
 </body>
 </html>
+

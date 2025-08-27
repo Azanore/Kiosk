@@ -6,7 +6,7 @@ class MenuService
     public function getActiveCategories(): array
     {
         $pdo = DB::pdo();
-        $sql = "SELECT id, name FROM categories WHERE is_active = 1 ORDER BY COALESCE(sort_order, 9999), name";
+        $sql = "SELECT id, name, image_url FROM categories WHERE is_active = 1 ORDER BY COALESCE(sort_order, 9999), name";
         return $pdo->query($sql)->fetchAll();
     }
 

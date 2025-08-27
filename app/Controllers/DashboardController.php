@@ -80,7 +80,7 @@ class DashboardController extends BaseController
         $this->requireAdmin();
         $pdo = DB::pdo();
         // Categories
-        $categories = $pdo->query("SELECT id, name, is_active, sort_order FROM categories ORDER BY COALESCE(sort_order,9999), name")->fetchAll();
+        $categories = $pdo->query("SELECT id, name, image_url, is_active, sort_order FROM categories ORDER BY COALESCE(sort_order,9999), name")->fetchAll();
         // Products (optionally filtered by category)
         $catId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
         if ($catId > 0) {
@@ -99,6 +99,7 @@ class DashboardController extends BaseController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Méthode non autorisée'; return; }
         $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
         $name = trim((string)($_POST['name'] ?? ''));
+        $imageUrl = trim((string)($_POST['image_url'] ?? ''));
         // Checkbox removed from UI: preserve current value on update; default to 1 on insert
         $pdo = DB::pdo();
         if ($id > 0) {
@@ -112,11 +113,11 @@ class DashboardController extends BaseController
         $sort = isset($_POST['sort_order']) && $_POST['sort_order'] !== '' ? (int)$_POST['sort_order'] : null;
         if ($name === '') { http_response_code(400); echo 'Nom requis'; return; }
         if ($id > 0) {
-            $stmt = $pdo->prepare("UPDATE categories SET name = ?, is_active = ?, sort_order = ? WHERE id = ?");
-            $stmt->execute([$name, $isActive, $sort, $id]);
+            $stmt = $pdo->prepare("UPDATE categories SET name = ?, image_url = ?, is_active = ?, sort_order = ? WHERE id = ?");
+            $stmt->execute([$name, ($imageUrl !== '' ? $imageUrl : null), $isActive, $sort, $id]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO categories (name, is_active, sort_order) VALUES (?, ?, ?)");
-            $stmt->execute([$name, $isActive, $sort]);
+            $stmt = $pdo->prepare("INSERT INTO categories (name, image_url, is_active, sort_order) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$name, ($imageUrl !== '' ? $imageUrl : null), $isActive, $sort]);
         }
         header('Location: ?r=dashboard/menu');
     }

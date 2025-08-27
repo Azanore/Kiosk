@@ -26,6 +26,8 @@
         <input id="cat-name-new" class="grow" type="text" name="name" placeholder="Nom de la catégorie" required>
         <label for="cat-order-new" class="visually-hidden">Ordre</label>
         <input id="cat-order-new" class="w-xxs" type="number" name="sort_order" placeholder="Ordre">
+        <label for="cat-image-new" class="visually-hidden">Image</label>
+        <input id="cat-image-new" class="grow" type="text" name="image_url" placeholder="/assets/img/cat_hot.jpg">
         <div class="actions">
           <button class="btn btn-primary" type="submit">Ajouter</button>
         </div>
@@ -36,13 +38,14 @@
             <th>Nom</th>
             <th>Ordre</th>
             <th>Statut</th>
+            <th>Image</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
         <?php if (empty($categories ?? [])): ?>
           <tr>
-            <td colspan="4" class="muted">Aucune catégorie pour le moment.</td>
+            <td colspan="5" class="muted">Aucune catégorie pour le moment.</td>
           </tr>
         <?php else: foreach (($categories ?? []) as $c): ?>
           <tr>
@@ -61,6 +64,10 @@
               <span class="badge" style="background:<?= $catActive ? '#16a34a' : '#dc2626' ?>; color:#fff;">
                 <?= $catActive ? 'Actif' : 'Inactif' ?>
               </span>
+            </td>
+            <td>
+                <label class="visually-hidden" for="cat-image-<?= (int)$c['id'] ?>">Image</label>
+                <input id="cat-image-<?= (int)$c['id'] ?>" class="grow" type="text" name="image_url" value="<?= htmlspecialchars((string)($c['image_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="/assets/img/cat_hot.jpg">
             </td>
             <td>
                 <button class="btn btn-primary" type="submit">Enregistrer</button>
