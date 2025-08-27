@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Produits</title>
-  <link rel="stylesheet" href="assets/css/app.css">
-  <link rel="stylesheet" href="assets/css/kiosk.css">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/app.css') ?>">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/kiosk.css') ?>">
 </head>
 <body class="kiosk">
   <div class="kiosk-app">
@@ -30,7 +30,7 @@
       <?php foreach ($products as $p): ?>
         <div class="card kiosk-card clickable">
           <?php if (!empty($p['image_url'])): ?>
-            <img src="<?= htmlspecialchars($p['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars('Photo de ' . $p['name'], ENT_QUOTES, 'UTF-8') ?>">
+            <img src="<?= $baseUrl(ltrim($p['image_url'] ?? '', '/')) ?>" alt="<?= htmlspecialchars('Photo de ' . $p['name'], ENT_QUOTES, 'UTF-8') ?>">
           <?php endif; ?>
           <div class="name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></div>
           <div class="price"><?= Format::money((float)$p['base_price']) ?></div>

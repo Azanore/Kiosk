@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Catégories</title>
-  <link rel="stylesheet" href="assets/css/app.css">
-  <link rel="stylesheet" href="assets/css/kiosk.css">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/app.css') ?>">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/kiosk.css') ?>">
 </head>
 <body class="kiosk">
   <div class="kiosk-app">
@@ -30,7 +30,7 @@
       <?php foreach ($categories as $c): ?>
         <div class="card kiosk-card clickable">
           <?php if (!empty($c['image_url'])): ?>
-            <img src="<?= htmlspecialchars($c['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars('Photo de ' . $c['name'], ENT_QUOTES, 'UTF-8') ?>">
+            <img src="<?= $baseUrl(ltrim($c['image_url'], '/')) ?>" alt="<?= htmlspecialchars('Photo de ' . $c['name'], ENT_QUOTES, 'UTF-8') ?>">
           <?php endif; ?>
           <div class="name"><?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?></div>
           <a class="btn kiosk-btn kiosk-btn-accent" href="?r=kiosk/products&id=<?= (int)$c['id'] ?>">Voir</a>

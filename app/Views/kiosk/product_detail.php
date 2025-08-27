@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></title>
-  <link rel="stylesheet" href="assets/css/app.css">
-  <link rel="stylesheet" href="assets/css/kiosk.css">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/app.css') ?>">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/kiosk.css') ?>">
 </head>
 <body class="kiosk">
   <div class="kiosk-app">
@@ -22,7 +22,7 @@
       <div class="detail-container">
         <div class="detail card kiosk-card">
           <?php if (!empty($product['image_url'])): ?>
-            <img src="<?= htmlspecialchars($product['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars('Photo de ' . $product['name'], ENT_QUOTES, 'UTF-8') ?>">
+            <img src="<?= $baseUrl(ltrim($product['image_url'], '/')) ?>" alt="<?= htmlspecialchars('Photo de ' . $product['name'], ENT_QUOTES, 'UTF-8') ?>">
           <?php endif; ?>
           <div class="name"><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></div>
           <div class="price"><?= Format::money((float)$product['base_price']) ?></div>

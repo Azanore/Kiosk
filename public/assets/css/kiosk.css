@@ -86,10 +86,10 @@ body.kiosk {
 
 /* Detail page */
 .kiosk .detail-container { flex:1; display:flex; align-items:center; justify-content:center; padding:16px; }
-.kiosk .detail .card { max-width:700px; width:100%; }
+.kiosk .detail .card { max-width:700px; width:100%; display: flex; flex-direction: column; align-items: center; }
 .kiosk .detail .name { font-size:22px; font-weight:700; margin-bottom:10px; }
 .kiosk .detail .price { color: var(--success); font-weight:700; margin-bottom:12px; }
-.kiosk .detail img { max-width:100%; height:220px; object-fit:cover; border-radius:12px; background:#eef2f7; margin-bottom:12px; }
+.kiosk .detail img { max-width:100%; max-height:300px; width: auto; height: auto; object-fit:contain; border-radius:12px; background:#eef2f7; margin: 0 auto 12px; display: block; }
 /* Product detail: use column form instead of row */
 .kiosk .detail form.row-form { display:flex; flex-direction: column; align-items: stretch; gap: 12px; }
 .kiosk .detail form.row-form input,

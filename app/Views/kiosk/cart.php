@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Panier</title>
-  <link rel="stylesheet" href="assets/css/app.css">
-  <link rel="stylesheet" href="assets/css/kiosk.css">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/app.css') ?>">
+  <link rel="stylesheet" href="<?= $baseUrl('assets/css/kiosk.css') ?>">
 </head>
 <body class="kiosk">
   <div class="kiosk-app">
@@ -24,16 +24,28 @@
           <div class="kiosk-title-lg" style="margin-bottom:10px;">Votre panier</div>
           <table class="kiosk-table">
       <thead>
-        <tr><th>Article</th><th>Prix</th><th>Qté</th><th>Total</th><th></th></tr>
+        <tr>
+          <th style="width: 40px;"></th>
+          <th>Article</th>
+          <th>Prix</th>
+          <th>Qté</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
       <?php if (empty($items)): ?>
-        <tr class="kiosk-row"><td colspan="5" class="muted">Votre panier est vide.</td></tr>
+        <tr class="kiosk-row"><td colspan="6" class="muted">Votre panier est vide.</td></tr>
       <?php else: foreach ($items as $it): ?>
         <tr class="kiosk-row">
+          <td>
+            <?php if (!empty($it['image_url'])): ?>
+              <img src="<?= $baseUrl(ltrim($it['image_url'], '/')) ?>" alt="" style="width: 36px; height: 36px; border-radius: 6px; object-fit: cover;">
+            <?php endif; ?>
+          </td>
           <td><?= htmlspecialchars($it['name'], ENT_QUOTES, 'UTF-8') ?></td>
           <td><?= Format::money((float)$it['price']) ?></td>
-          <td class="qty">
+          <td class="qty" style="white-space: nowrap;">
             <a href="?r=kiosk/decQty&id=<?= (int)$it['id'] ?>">−</a>
             <strong style="margin:0 8px;"><?= (int)$it['qty'] ?></strong>
             <a href="?r=kiosk/incQty&id=<?= (int)$it['id'] ?>">+</a>

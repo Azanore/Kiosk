@@ -66,6 +66,7 @@ class KioskController extends BaseController
                 'name' => $product['name'],
                 'price' => (float)$product['base_price'],
                 'qty' => 0,
+                'image_url' => $product['image_url'] ?? ''
             ];
         }
         $_SESSION['cart'][$productId]['qty'] += $qty;
