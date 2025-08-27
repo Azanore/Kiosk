@@ -4,17 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Paiement en cours</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; background:#fff; color:#111; }
-    .wrap { display:flex; min-height:100vh; align-items:center; justify-content:center; text-align:center; padding:24px; }
-    .card { max-width:560px; width:100%; border:1px solid #eee; border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
-    .num { font-size:48px; font-weight:800; color:#0a7; }
-    .muted { color:#666; }
-    .spinner { width:40px; height:40px; border:4px solid #e2e8f0; border-top-color:#0a7; border-radius:50%; margin:18px auto; animation:spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/kiosk.css">
 </head>
-<body>
+<body class="kiosk kiosk-wait">
   <div class="wrap">
     <div class="card">
       <div>Numéro de commande</div>
@@ -22,7 +15,7 @@
       <div class="muted" style="margin-top:8px;">Montant: <?= Format::money((float)$total) ?></div>
       <div class="spinner"></div>
       <div>Paiement par carte en cours… Veuillez suivre les instructions sur le terminal.</div>
-      <div style="margin-top:12px;"><a href="?r=kiosk/welcome" style="color:#0a7;">Retour à l'accueil</a></div>
+      <div style="margin-top:12px;"><a class="back" href="?r=kiosk/welcome">Retour à l'accueil</a></div>
     </div>
   </div>
   <script>
@@ -52,9 +45,10 @@
         if (card) {
           const div = document.createElement('div');
           div.style.marginTop = '12px';
-          div.innerHTML = '<div class="muted">Temps dépassé. Veuillez réessayer ou payer au comptoir.</div>'+
+          div.innerHTML = '<div class="muted">Temps dépassé. Veuillez réessayer ou basculer au comptoir.</div>'+
             '<div style="margin-top:10px;">'+
             '<button id="retryBtn" style="padding:10px 14px;border:0;border-radius:8px;background:#0a7;color:#fff;cursor:pointer;">Réessayer</button> '+
+            '<a id="counterBtn" href="?r=order/switchToCounter&id=' + orderId + '" class="btn" style="margin-left:8px;">Basculer au comptoir</a> '+
             '<a href="?r=kiosk/welcome" style="margin-left:8px;">Accueil</a>'+
             '</div>';
           card.appendChild(div);

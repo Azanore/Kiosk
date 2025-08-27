@@ -4,35 +4,36 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Produits</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; background:#fafafa; color:#111; }
-    header { padding:16px 20px; font-size:20px; font-weight:600; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; padding:16px; }
-    .card { background:#fff; border-radius:14px; padding:18px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-    .name { font-size:18px; margin:8px 0; }
-    .price { color:#0a7; font-weight:600; margin-bottom:10px; }
-    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#0a7; color:#fff; text-decoration:none; }
-    .back { margin-left:16px; color:#0a7; text-decoration:none; }
-    img { max-width:100%; height:140px; object-fit:cover; border-radius:10px; background:#eee; }
-  </style>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/kiosk.css">
 </head>
-<body>
-  <header>
+<body class="kiosk">
+  <header class="kiosk">
     Produits
     <a class="back" href="?r=kiosk/categories">Retour</a>
   </header>
-  <main class="grid">
-    <?php foreach ($products as $p): ?>
-      <div class="card">
-        <?php if (!empty($p['image_url'])): ?>
-          <img src="<?= htmlspecialchars($p['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="">
-        <?php endif; ?>
-        <div class="name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></div>
-        <div class="price"><?= Format::money((float)$p['base_price']) ?></div>
-        <a class="btn" href="?r=kiosk/productDetail&id=<?= (int)$p['id'] ?>">Choisir</a>
-      </div>
-    <?php endforeach; ?>
-  </main>
+  <div class="kiosk-products-container">
+    <main class="kiosk-products grid">
+      <?php if (empty($products)): ?>
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="name">Aucun produit à afficher</div>
+          <div class="muted" style="margin-top:6px;">Veuillez sélectionner une autre catégorie ou revenir plus tard</div>
+          <div style="margin-top:12px;"><a class="btn" href="?r=kiosk/categories">Catégories</a></div>
+        </div>
+      <?php else: ?>
+      <?php foreach ($products as $p): ?>
+        <div class="card">
+          <?php if (!empty($p['image_url'])): ?>
+            <img src="<?= htmlspecialchars($p['image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="">
+          <?php endif; ?>
+          <div class="name"><?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?></div>
+          <div class="price"><?= Format::money((float)$p['base_price']) ?></div>
+          <a class="btn" href="?r=kiosk/productDetail&id=<?= (int)$p['id'] ?>">Choisir</a>
+        </div>
+      <?php endforeach; ?>
+      <?php endif; ?>
+    </main>
+  </div>
   <script>
     (function(){
       var idleMs = (<?= (int)(require dirname(__DIR__, 3) . '/Config/app.php')['kiosk_idle_seconds'] ?? 90 ?>) * 1000;

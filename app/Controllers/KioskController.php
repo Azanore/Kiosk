@@ -138,7 +138,14 @@ class KioskController extends BaseController
         $_SESSION['cart'] = [];
 
         if ($payment === 'card') {
-            // Show waiting screen; admin marks as paid; kiosk polls OrderController
+            // Choose between simulator and polling based on config
+            $cfg = require BASE_PATH . '/app/Config/app.php';
+            $provider = (string)($cfg['payment_provider'] ?? 'simulator');
+            if ($provider === 'simulator') {
+                header('Location: ?r=order/startTestPayment&id=' . (int)$order['id']);
+                return;
+            }
+            // Polling screen (standalone terminal flow)
             $this->render('kiosk/waiting_payment', [
                 'orderId' => (int)$order['id'],
                 'orderNumber' => (int)$order['display_number'],
@@ -147,11 +154,14 @@ class KioskController extends BaseController
             return;
         }
 
-        // Counter payment: show confirmation immediately
+        // Counter payment: show confirmation immediately (receipt will auto-print in background)
+        $cfg = require BASE_PATH . '/app/Config/app.php';
         $this->render('kiosk/confirm', [
             'orderNumber' => (int)$order['display_number'],
             'orderType' => $order['order_type'],
             'payment' => $order['payment_method'],
+            'orderId' => (int)$order['id'],
+            'confirmSeconds' => (int)($cfg['confirm_return_seconds'] ?? 12),
         ]);
     }
 
@@ -166,10 +176,13 @@ class KioskController extends BaseController
             $stmt->execute([$id]);
             $o = $stmt->fetch();
             if (!$o) { header('Location: ?r=kiosk/welcome'); return; }
+            $cfg = require BASE_PATH . '/app/Config/app.php';
             $this->render('kiosk/confirm', [
                 'orderNumber' => (int)$o['display_number'],
                 'orderType' => (string)$o['order_type'],
                 'payment' => (string)$o['payment_method'],
+                'orderId' => (int)$id,
+                'confirmSeconds' => (int)($cfg['confirm_return_seconds'] ?? 12),
             ]);
         } catch (Throwable $e) {
             header('Location: ?r=kiosk/welcome');

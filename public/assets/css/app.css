@@ -1,0 +1,212 @@
+/* Global App Stylesheet
+   Non-negotiable: purely cosmetic. No JS/HTML behavior or routes affected. */
+
+   :root {
+    --color-bg: #ffffff;
+    --color-surface: #f7f8fa;
+    --color-text: #1f2937;
+    --color-muted: #6b7280;
+    --color-accent: #2563eb; /* blue */
+    --color-border: #e5e7eb;
+  
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger:  #dc2626;
+    --info:    #0ea5e9;
+  
+    --radius: 8px;
+    --shadow-1: 0 2px 12px rgba(0,0,0,.08);
+  
+    --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+    --space-4: 16px; --space-5: 24px; --space-6: 32px;
+    --space-7: 40px; --space-8: 48px; --space-9: 64px;
+  
+  }
+  
+  /* Reset: box-sizing, padding, margin */
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; padding: 0; }
+  
+  /* Base */
+  html, body {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #fafafa;
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+  main { display: block; }
+  
+  h1, h2, h3 { margin: 0 0 var(--space-4); line-height: 1.25; }
+  label { display: block; margin: var(--space-2) 0 var(--space-1); }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: 2px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-color: var(--color-accent);
+  }
+  
+  /* Textareas: behave like one-line input; overflow scrolls vertically when needed */
+  textarea {
+    resize: none;
+    height: 40px; /* similar to input height */
+    line-height: 1.4;
+    overflow-y: auto;
+    white-space: nowrap;
+  }
+  button, .btn {
+    display: inline-block;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 16px;
+    line-height: 1; /* normalize content height across <a> and <button> */
+    min-height: 40px; /* shared baseline button height */
+    cursor: pointer;
+  }
+  
+  /* Layout helpers */
+  .wrap {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6) var(--space-4);
+  }
+  
+  .card {
+    background: #fff;
+    padding: var(--space-5);
+    border-radius: 12px;
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--color-border);
+  }
+  
+  /* Forms */
+  form.card {
+    width: 100%;
+    max-width: 380px;
+  }
+  form.card > * + * { /* vertical rhythm inside forms */
+    margin-top: var(--space-3);
+  }
+  
+  /* Feedback */
+  .error { color: var(--danger); margin-bottom: var(--space-2); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
+  
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--color-border); text-align: left; }
+  thead th { position: sticky; top: 0; background: var(--color-surface); z-index: 1; }
+  
+  /* Print base (receipt pages may add more) */
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+  }
+  
+  /* Admin hard rules: 1px borders, no radius (except badges), no shadows */
+  .admin .card { border-radius: 0; box-shadow: none; border: 1px solid var(--color-border); }
+  .admin input,
+  .admin select,
+  .admin textarea,
+  .admin button,
+  .admin .btn,
+  .admin table,
+  .admin th,
+  .admin td {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .admin button,
+  .admin .btn { border: 1px solid var(--color-border); }
+  
+  /* Admin header and navigation */
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-4);
+    background: #0f172a; /* slate-900 for strong contrast */
+    color: #fff;
+    border-bottom: 1px solid #0b1220; /* subtle darker line */
+    margin-bottom: var(--space-6); /* more space below header */
+  }
+  .admin-header .brand { font-weight: 600; color: #fff; }
+  .admin-nav a {
+    display: inline-block;
+    margin-left: var(--space-3);
+    color: #e5e7eb; /* light gray for readability on dark */
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+  }
+  .admin-nav a:hover,
+  .admin-nav a:focus { color: #ffffff; }
+  .admin-nav a:focus-visible { outline: 2px solid #94a3b8; outline-offset: 2px; }
+  .admin-nav a[aria-current="page"] { color: #ffffff; border-color: #ffffff; }
+  /* Make the logout link look like a proper button on dark header */
+  .admin-nav a.danger {
+    color: #fecaca; /* light red text */
+    border: 1px solid #b91c1c; /* red-700 */
+    background: transparent;
+    padding: 6px 10px;
+    margin-left: var(--space-4);
+    border-bottom: 1px solid #b91c1c !important; /* override 2px underline */
+  }
+  .admin-nav a.danger:hover,
+  .admin-nav a.danger:focus {
+    color: #ffffff;
+    background: #b91c1c; /* red-700 */
+    border-color: #b91c1c;
+  }
+  
+  /* Admin main spacing */
+  /* Admin main spacing: generous horizontal padding */
+  .admin main { padding: var(--space-5) var(--space-9); }
+  .section { margin-top: var(--space-5); }
+  
+  /* Bordered panels for major sections */
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: var(--space-4);
+  }
+  .admin .panel { border-radius: 0; box-shadow: none; }
+  .panel > h2 { margin-bottom: var(--space-3); }
+  .panel .row-form { margin-bottom: var(--space-3); }
+  .panel table { background: #fff; }
+  .panel table + .row-form { margin-top: var(--space-4); }
+  
+  /* Forms layout helpers */
+  .row-form { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+  /* Override global 100% width inside inline row forms */
+  .row-form input,
+  .row-form select,
+  .row-form textarea { width: auto; flex: 0 1 auto; }
+  .row-form .grow { flex: 1 1 240px; min-width: 180px; }
+  /* Width utilities for compact fields */
+  .w-xxs { width: 72px; }
+  .w-xs  { width: 110px; }
+  .w-sm  { width: 180px; }
+  .inline { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: var(--space-2); }
+  .inline input,
+  .inline select,
+  .inline textarea { width: auto; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 1px, 1px); white-space: nowrap; border: 0; }
+  
+  /* Buttons */
+  .btn.secondary { background: var(--color-border); color: var(--color-text); }
+  

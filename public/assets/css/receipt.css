@@ -1,0 +1,39 @@
+/* Receipt print-friendly CSS (80mm thermal) */
+
+@media screen {
+  body { background:#fff; }
+}
+
+body.receipt-print {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.35;
+  background: #fff;
+}
+
+.receipt-wrap { min-height: 100vh; display:flex; flex-direction: column; align-items:center; justify-content:center; padding: 16px 0; }
+
+.receipt { width: 80mm; margin: 0 auto; padding: 8mm 6mm; border: 1px dashed #000; background:#fff; }
+.center { text-align:center; }
+.big { font-size: 20px; font-weight: 800; }
+.receipt .big { margin-bottom: 2px; }
+hr { border: 0; border-top: 1px dashed #000; margin: 10px 0; }
+
+.receipt table { width:100%; border-collapse:collapse; }
+.receipt td { padding: 5px 0; vertical-align: top; }
+.receipt .items td { border-bottom: 1px dashed #ccc; }
+.receipt .items tr:last-child td { border-bottom: 0; }
+.total { border-top: 1px dashed #000; margin-top: 12px; padding-top: 12px; }
+.total > div { margin: 3px 0; }
+
+/* Actions below receipt (screen only) */
+.receipt-actions { text-align: center; margin-top: 24px; }
+
+/* Print: page size and margins */
+@page { size: 80mm auto; margin: 6mm 4mm; }
+@media print {
+  body { background:#fff; }
+  .receipt-wrap { min-height: auto; display: block; padding: 0; }
+  .receipt { width: auto; margin: 0; border: 0; padding: 0; }
+  .receipt-actions { display: none !important; }
+}

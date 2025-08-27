@@ -3,18 +3,12 @@
 <head>
   <meta charset="utf-8">
   <title>Reçu</title>
-  <style>
-    body { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .center { text-align:center; }
-    .big { font-size:28px; font-weight:800; }
-    table { width:100%; border-collapse:collapse; }
-    td { padding:4px 0; }
-    .items td { border-bottom:1px dashed #ccc; }
-    .items tr:last-child td { border-bottom:0; }
-    .total { border-top:1px dashed #000; margin-top:8px; padding-top:8px; }
-  </style>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/receipt.css">
 </head>
-<body>
+<body class="receipt-print">
+  <div class="receipt-wrap">
+    <div class="receipt">
   <div class="center">
     <div class="big"><?= htmlspecialchars($cfg['cafe_name'] ?? 'Café', ENT_QUOTES, 'UTF-8') ?></div>
     <?php if (!empty($cfg['cafe_address'])): ?><div><?= htmlspecialchars($cfg['cafe_address'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
@@ -27,31 +21,39 @@
     <?php foreach ($items as $it): ?>
       <tr>
         <td><?= (int)$it['quantity'] ?> × <?= htmlspecialchars($it['product_name'], ENT_QUOTES, 'UTF-8') ?></td>
-        <td style="text-align:right;"><?= Format::money((float)$it['line_total']) ?></td>
+        <td style="text-align:right;">&nbsp;<?= Format::money((float)$it['line_total']) ?></td>
       </tr>
     <?php endforeach; ?>
   </table>
   <div class="total">
-    Total: <?= Format::money((float)$order['total_price']) ?> — Paiement: <?= $order['payment_method'] === 'card' ? 'Carte' : 'Comptoir' ?> — Type: <?= $order['order_type'] === 'takeaway' ? 'À emporter' : 'Sur place' ?>
+    <div>Total: <?= Format::money((float)$order['total_price']) ?></div>
+    <div>Paiement: <?= $order['payment_method'] === 'card' ? 'Carte' : 'Comptoir' ?></div>
+    <div>Type: <?= $order['order_type'] === 'takeaway' ? 'À emporter' : 'Sur place' ?></div>
   </div>
   <?php if (($order['payment_method'] ?? '') === 'counter'): ?>
     <div class="center" style="margin-top:6px;">Merci de régler au comptoir</div>
   <?php endif; ?>
   <div class="center" style="margin-top:10px;">Merci et à bientôt</div>
-  <div id="fallback" class="center" style="margin-top:12px; display:none;">
-    <div class="muted" style="margin-bottom:6px;">Si l'impression ne démarre pas, vous pouvez :</div>
-    <button onclick="window.close()" style="padding:8px 12px; border:0; border-radius:8px; background:#0a7; color:#fff; cursor:pointer;">Fermer</button>
-    <a href="?r=dashboard/orders" style="margin-left:8px;">Retour au tableau de bord</a>
+    </div>
+    <div id="fallback" class="receipt-actions center" style="display:none;">
+      <div class="muted" style="margin-bottom:6px;">Si l'impression ne démarre pas, vous pouvez :</div>
+      <a href="?r=dashboard/orders">Retour au tableau de bord</a>
+    </div>
   </div>
-  <style>@media print { #fallback { display:none !important; } }</style>
   <script>
-    // Auto print on load and show fallback after print
-    window.onload = function() { try { window.print(); } catch(e) {} };
-    function showFallback(){ var el = document.getElementById('fallback'); if (el) el.style.display = 'block'; }
-    if (window.matchMedia) { var mq = window.matchMedia('print'); if (mq && mq.addListener) { mq.addListener(function(m){ if (!m.matches) showFallback(); }); } }
-    window.onafterprint = showFallback;
-    // Also show fallback after a short delay in case print blocked
-    setTimeout(showFallback, 2000);
+    // Manual print: show actions by default; no auto window.print()
+    (function(){
+      var fb = document.getElementById('fallback');
+      if (fb) fb.style.display = 'block';
+      // Add an Imprimer button programmatically next to Fermer for clarity
+      try {
+        var printBtn = document.createElement('button');
+        printBtn.textContent = 'Imprimer';
+        printBtn.style.cssText = 'padding:8px 12px; border:0; border-radius:8px; background:#06c; color:#fff; cursor:pointer; margin-right:8px;';
+        printBtn.onclick = function(){ window.print(); };
+        fb.insertBefore(printBtn, fb.firstChild);
+      } catch(e) { /* no-op */ }
+    })();
   </script>
 </body>
 </html>

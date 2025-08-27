@@ -1,0 +1,118 @@
+/* Kiosk Theme: engaging, bold, touch-friendly */
+
+/* Typography: friendly rounded font for kiosk */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+:root {
+  --kiosk-primary: #0ea5e9; /* sky */
+  --kiosk-primary-dark: #0284c7;
+  --kiosk-accent: #f59e0b; /* amber */
+  --kiosk-bg: #fafafa;
+  --kiosk-card: #ffffff;
+}
+
+body.kiosk {
+  font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--kiosk-bg);
+}
+
+/* Links */
+.kiosk a { color: #10b981; text-decoration: none; transition: color .15s ease; }
+.kiosk a:hover { color: var(--kiosk-primary-dark); text-decoration: none; }
+
+.kiosk header.kiosk { padding: 16px 20px; font-size: 22px; font-weight: 700; }
+.kiosk a.back { margin-left: 16px; color: var(--kiosk-primary); text-decoration: none; }
+.kiosk a.back:hover { text-decoration: underline; }
+
+/* Centering helper for static pages */
+.kiosk .wrap { display:flex; min-height:100vh; align-items:center; justify-content:center; padding: 24px; }
+
+/* Cards and buttons */
+.kiosk .card { background: var(--kiosk-card); padding: 24px; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 6px 24px rgba(2, 132, 199, .08); }
+.kiosk .btn { background: var(--kiosk-primary); border-radius: 14px; padding: 16px 22px; font-size: 18px; }
+.kiosk .btn:hover { background: var(--kiosk-primary-dark); }
+.kiosk .btn.secondary { background: var(--color-border); color: var(--color-text); }
+
+/* Welcome */
+.kiosk-welcome .card { text-align: center; max-width: 680px; padding: 36px; }
+.kiosk-welcome .title { font-size: clamp(40px, 6vw, 56px); margin-bottom: 18px; font-weight: 800; }
+.kiosk-welcome .hint { color: var(--color-muted); font-size: 18px; }
+.kiosk-welcome .btn { font-size: 24px; padding: 18px 28px; border-radius: 14px; }
+
+/* Categories */
+.kiosk-cats-container { flex: 1; display: flex; align-items: center; justify-content: center; }
+.kiosk-cats.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; padding: 16px; width: 100%; max-width: 900px; }
+.kiosk-cats .card { text-align: center; }
+.kiosk-cats .card a { display:block; text-decoration:none; color:inherit; font-size:20px; padding: 12px 0; }
+
+/* Products */
+.kiosk-products-container { flex: 1; display: flex; align-items:center; justify-content:center; }
+.kiosk-products.grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; padding:16px; width:100%; max-width: 1000px; }
+.kiosk-products .card { text-align:center; padding: 18px; }
+.kiosk-products .name { font-size: 18px; margin: 8px 0; font-weight: 600; }
+.kiosk-products .price { color: var(--success); font-weight:700; margin-bottom: 10px; }
+.kiosk-products img { max-width: 100%; height: 160px; object-fit: cover; border-radius: 12px; background: #eef2f7; }
+
+/* Waiting payment */
+.kiosk-wait .num { font-size: 56px; font-weight: 800; color: var(--success); }
+.kiosk-wait .muted { color: var(--color-muted); }
+.kiosk-wait .spinner { width: 44px; height: 44px; border: 4px solid #e2e8f0; border-top-color: var(--success); border-radius: 50%; margin: 18px auto; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Checkout, cart, detail etc. will reuse generic kiosk card/button styles. */
+
+/* Generic rows and actions */
+.kiosk .row { padding: 16px; }
+.kiosk .actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px; }
+.kiosk .total { text-align: right; font-size: 18px; font-weight: 700; margin-top: 12px; }
+.kiosk .muted { color: var(--color-muted); }
+
+/* Quantity controls */
+.kiosk .qty a { display:inline-block; padding:6px 10px; background:#eef2f7; border-radius: 12px; text-decoration:none; color:#111; }
+
+/* Product detail quantity stepper */
+.kiosk .qty-stepper { display: inline-flex; align-items: center; gap: 8px; }
+.kiosk .qty-stepper .btn { min-width: 44px; min-height: 44px; padding: 10px 14px; line-height: 1; border-radius: 12px; }
+.kiosk .qty-stepper input[type=number] { width: 72px; height: 44px; text-align: center; font-size: 18px; padding: 6px 8px; }
+
+/* Detail page */
+.kiosk .detail-container { flex:1; display:flex; align-items:center; justify-content:center; padding:16px; }
+.kiosk .detail .card { max-width:700px; width:100%; }
+.kiosk .detail .name { font-size:22px; font-weight:700; margin-bottom:10px; }
+.kiosk .detail .price { color: var(--success); font-weight:700; margin-bottom:12px; }
+.kiosk .detail img { max-width:100%; height:220px; object-fit:cover; border-radius:12px; background:#eef2f7; margin-bottom:12px; }
+/* Product detail: use column form instead of row */
+.kiosk .detail form.row-form { display:flex; flex-direction: column; align-items: stretch; gap: 12px; }
+.kiosk .detail form.row-form input,
+.kiosk .detail form.row-form select,
+.kiosk .detail form.row-form textarea { width: 100%; }
+.kiosk .detail form.row-form .actions { display:flex; justify-content: center; margin-top: 8px; }
+
+/* Checkout form layout */
+.kiosk .row .label { font-weight:600; margin-right:8px; }
+.kiosk .row .inline { display:flex; justify-content: space-evenly; align-items:center; gap:16px 24px; width:100%; flex-wrap:wrap; }
+/* Kiosk row-form: touch-friendly spacing */
+.kiosk .row-form { display:flex; gap: 12px 16px; align-items:center; flex-wrap:wrap; }
+.kiosk .row-form .grow { flex: 1 1 260px; min-width: 200px; }
+.kiosk .row-form input,
+.kiosk .row-form select,
+.kiosk .row-form textarea { width: auto; }
+
+/* Confirmation screen */
+.kiosk .btn { background: #10b981; color: #fff; }
+.kiosk .btn:hover { background: #0ea5e9; color: #fff }
+.kiosk .btn-lg { padding: 16px 22px; font-size: 20px; }
+/* Force confirm page background on the body/html only for that page */
+html.kiosk-confirm,
+body.kiosk.kiosk-confirm { background: #0ea56b !important; color: #fff; }
+/* Stronger text contrast on confirm page */
+.kiosk-confirm { color: #ffffff; }
+.kiosk-confirm .num { color: #ffffff; }
+.kiosk-confirm .notice { color: #ffffff; }
+.kiosk-confirm .muted { color: rgba(255,255,255,0.9); }
+.kiosk-confirm .wrap { text-align: center; padding: 32px; }
+/* Stack content vertically with consistent gaps */
+.kiosk-confirm .wrap > div { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.kiosk-confirm .num { font-size: 64px; font-weight: 800; letter-spacing: 1px; margin: 8px 0 6px; }
+.kiosk-confirm .btn { background:#fff; color:#0ea56b; margin-top: 12px; }
+.kiosk-confirm .notice { margin-top: 20px; font-size: 18px; font-weight: 700; }

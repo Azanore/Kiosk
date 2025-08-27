@@ -1,6 +1,6 @@
-# Moroccan Café Kiosk – MVP
+# Moroccan Café Kiosk
 
-Minimal self-ordering kiosk for a Moroccan café. Pragmatic PHP 8 + MySQL MVC with a single front controller.
+Self-ordering kiosk for a Moroccan café. Pragmatic PHP 8 + MySQL MVC with a single front controller.
 
 ## Prerequisites
 - PHP 8.2+
@@ -18,8 +18,11 @@ Minimal self-ordering kiosk for a Moroccan café. Pragmatic PHP 8 + MySQL MVC wi
 - Edit `app/Config/database.php` with your local credentials
 
 3) Configure app
-- `app/Config/app.php` contains timezone, locale, money formatting, kiosk idle timeout, and café details used on receipts:
-  - `cafe_name`, `cafe_address`, `cafe_phone`
+- `app/Config/app.php` contains environment and kiosk settings, including:
+  - `env` (`dev`|`prod`), `timezone`, `locale`
+  - `kiosk_idle_seconds`, `confirm_return_seconds`, `auto_cancel_minutes`
+  - `currency_suffix`, `number_locale`, `cafe_name`, `cafe_address`, `cafe_phone`
+  - `payment_provider`: `simulator` (default in-app test terminal) or `terminal` (standalone terminal with admin marking Paid)
 
 4) Run with XAMPP (recommended)
 - Place this project under XAMPP `htdocs` (e.g., `C:/xampp/htdocs/Kiosk`)
@@ -45,26 +48,31 @@ Examples:
 Kiosk (client):
 - Welcome → Categories → Products → Product detail → Cart → Checkout
 - Payment types:
-  - Carte: creates order as `awaiting_payment` and shows waiting screen. Kiosk polls every ~3s. Admin marks Paid to simulate terminal success.
-  - Comptoir: shows confirmation immediately; receipt can be printed from Admin.
+  - Carte:
+    - If `payment_provider=simulator` (default): kiosk opens test terminal at `?r=order/startTestPayment&id=...` with Approve/Decline. Approve marks order `paid` and shows confirmation (big number).
+    - If `payment_provider=terminal`: kiosk shows waiting screen and polls `?r=order/pollStatus&id=...` every ~3s while staff completes payment and marks Paid in admin.
+  - Comptoir: shows confirmation immediately (big number). Staff can mark Paid later in admin.
 - Inactivity: kiosk auto-returns to welcome after ~90s. Confirmation auto-returns after ~12s.
 
 Admin (dashboard):
 - Orders board with scope filter (Aujourd'hui/Tout), grouped by status
-- Quick action: “Marquer payé” when awaiting payment
-- Status updates: paid → preparing → ready → completed; cancel supported
+- Clear status badges per order; “Imprimer” hidden for cancelled
+- Awaiting payment shows only: “Marquer payé” and “Annuler”
+- Other statuses: generic select to update to paid/preparing/ready/completed/cancelled; invalid transitions from awaiting payment are blocked
+- Print receipt per order: manual “Imprimer” button on the receipt page
 - Print receipt per order: `?r=order/printReceipt&id=...`
-- Menu management: `?r=dashboard/menu` to create/edit categories and products, set order, toggle availability
+- Menu management: `?r=dashboard/menu` to create/edit categories and products, set sort order, toggle activation/availability
 
 ## Receipts
 - Thermal-friendly HTML: café header, big order number, date/time, items, totals
 - Shows payment method and order type. If `Comptoir`, shows “Merci de régler au comptoir”.
-- Browser auto-print on load.
+- Admin reprint page: `?r=order/printReceipt&id=...` now uses a manual “Imprimer” button (no auto popup). Includes a link back to the dashboard.
 
-## Notes (MVP)
-- No real card SDK integrated; card flow is simulated via admin “Marquer payé”.
-- Sessions used for admin and cart; no CSRF (MVP scope). Use behind trusted network.
-- Prepared statements for DB access.
+## Notes
+- No per-item customizations; products have name, image, base price.
+- No real card SDK integrated. Use the in-app simulator or mark Paid from admin when using a standalone terminal.
+- Sessions are used for admin and cart; use behind a trusted network.
+- Prepared statements are used for DB access.
 
 ## Troubleshooting
 - White page or errors: check `public/index.php` router and PHP error logs
@@ -75,12 +83,12 @@ Admin (dashboard):
 - Kiosk – Counter:
   1. Add 1–2 items to cart → Checkout → select Comptoir → Confirm
   2. Confirmation shows order number; auto-return to welcome after ~12s
-  3. Admin: print receipt; receipt shows café header, items, totals, Comptoir note
+  3. Admin: mark Paid when customer settles
 - Kiosk – Card (simulated):
   1. Add items → Checkout → select Carte → Confirm
   2. Waiting screen shows amount and polls every ~3s
   3. Admin: “Marquer payé” → Kiosk redirects to confirmation
 - Admin dashboard:
-  - Scope filter Aujourd'hui/Tout works; grouped by status; can update statuses
-  - Receipt prints and fallback is visible if print fails
+  - Scope filter Aujourd'hui/Tout works; grouped by status; can update statuses with the generic select (except awaiting payment which has dedicated buttons)
+  - Reprint is available per order via the manual “Imprimer” button on the receipt page
   - Auto-refresh updates list every 15s

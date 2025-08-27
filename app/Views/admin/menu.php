@@ -4,117 +4,141 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Menu (Catégories & Produits)</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:0; background:#fafafa; color:#111; }
-    header { padding:16px 20px; font-size:20px; font-weight:600; display:flex; justify-content:space-between; align-items:center; }
-    .wrap { padding:16px; }
-    h2 { margin:10px 0; font-size:18px; }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    th, td { padding:8px 10px; border-bottom:1px solid #eee; text-align:left; }
-    input[type=text], input[type=number], select { padding:6px 8px; border:1px solid #ccc; border-radius:6px; }
-    textarea { padding:6px 8px; border:1px solid #ccc; border-radius:6px; width:100%; height:60px; }
-    .btn { padding:6px 10px; border-radius:8px; background:#0a7; color:#fff; border:0; cursor:pointer; }
-    .btn.secondary { background:#555; }
-    .row-form { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .logout { color:#b00; text-decoration:none; }
-    .header-links a { margin-right:10px; }
-    .section { margin-bottom:22px; }
-  </style>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
-<body>
-  <header>
-    <div>Tableau de bord – Menu</div>
-    <div class="header-links">
+<body class="admin">
+  <header class="admin-header">
+    <div class="brand">Administration</div>
+    <nav class="admin-nav">
       <a href="?r=dashboard/orders">Commandes</a>
-      <a class="logout" href="?r=auth/logout">Déconnexion</a>
-    </div>
+      <a href="?r=dashboard/menu" aria-current="page">Menu</a>
+      <a href="?r=auth/logout" class="danger">Déconnexion</a>
+    </nav>
   </header>
-  <div class="wrap">
-    <div class="section">
+  <main>
+    <h1>Menu</h1>
+    <section class="section panel">
       <h2>Catégories</h2>
-      <form method="post" action="?r=dashboard/saveCategory" class="row-form" style="margin:8px 0;">
+      <form method="post" action="?r=dashboard/saveCategory" class="row-form">
         <input type="hidden" name="id" value="">
-        <input type="text" name="name" placeholder="Nom de la catégorie" required>
-        <input type="number" name="sort_order" placeholder="Ordre" style="width:90px;">
-        <label><input type="checkbox" name="is_active" checked> Active</label>
-        <button class="btn" type="submit">Ajouter</button>
+        <label for="cat-name-new" class="visually-hidden">Nom</label>
+        <input id="cat-name-new" class="grow" type="text" name="name" placeholder="Nom de la catégorie" required>
+        <label for="cat-order-new" class="visually-hidden">Ordre</label>
+        <input id="cat-order-new" class="w-xxs" type="number" name="sort_order" placeholder="Ordre">
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Ajouter</button>
+        </div>
       </form>
       <table>
-        <tr>
-          <th>Nom</th><th>Ordre</th><th>Active</th><th>Actions</th>
-        </tr>
-        <?php foreach (($categories ?? []) as $c): ?>
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Ordre</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($categories ?? [])): ?>
+          <tr>
+            <td colspan="4" class="muted">Aucune catégorie pour le moment.</td>
+          </tr>
+        <?php else: foreach (($categories ?? []) as $c): ?>
           <tr>
             <td>
               <form method="post" action="?r=dashboard/saveCategory" class="row-form">
                 <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
-                <input type="text" name="name" value="<?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?>" required>
+                <label class="visually-hidden" for="cat-name-<?= (int)$c['id'] ?>">Nom</label>
+                <input id="cat-name-<?= (int)$c['id'] ?>" class="grow" type="text" name="name" value="<?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?>" required>
             </td>
             <td>
-                <input type="number" name="sort_order" value="<?= htmlspecialchars((string)$c['sort_order'], ENT_QUOTES, 'UTF-8') ?>" style="width:90px;">
+                <label class="visually-hidden" for="cat-order-<?= (int)$c['id'] ?>">Ordre</label>
+                <input id="cat-order-<?= (int)$c['id'] ?>" class="w-xxs" type="number" name="sort_order" value="<?= htmlspecialchars((string)$c['sort_order'], ENT_QUOTES, 'UTF-8') ?>">
             </td>
             <td>
-                <label><input type="checkbox" name="is_active" <?= ((int)$c['is_active'] === 1) ? 'checked' : '' ?>> Active</label>
+              <?php $catActive = (int)$c['is_active'] === 1; ?>
+              <span class="badge" style="background:<?= $catActive ? '#16a34a' : '#dc2626' ?>; color:#fff;">
+                <?= $catActive ? 'Actif' : 'Inactif' ?>
+              </span>
             </td>
             <td>
-                <button class="btn" type="submit">Enregistrer</button>
+                <button class="btn btn-primary" type="submit">Enregistrer</button>
               </form>
-              <form method="post" action="?r=dashboard/toggleCategory" style="display:inline-block; margin-left:6px;">
+              <form method="post" action="?r=dashboard/toggleCategory" class="inline">
                 <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
-                <button class="btn secondary" type="submit">Basculer</button>
+                <button class="btn btn-secondary" type="submit"><?= ((int)$c['is_active'] === 1) ? 'Désactiver' : 'Activer' ?></button>
               </form>
             </td>
           </tr>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
+        </tbody>
       </table>
-    </div>
+    </section>
 
-    <div class="section">
+    <section class="section panel">
       <h2>Produits</h2>
-      <form method="get" action="" class="row-form" style="margin:8px 0;">
+      <form method="get" action="" class="row-form">
         <input type="hidden" name="r" value="dashboard/menu">
-        <label>Catégorie:
-          <select name="category_id" onchange="this.form.submit()">
+        <label for="filter-category" class="visually-hidden">Catégorie</label>
+        <select id="filter-category" name="category_id" onchange="this.form.submit()">
             <option value="0" <?= (isset($category_id) && (int)$category_id === 0) ? 'selected' : '' ?>>Toutes</option>
             <?php foreach (($categories ?? []) as $c): ?>
               <option value="<?= (int)$c['id'] ?>" <?= ((int)($category_id ?? 0) === (int)$c['id']) ? 'selected' : '' ?>><?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?></option>
             <?php endforeach; ?>
-          </select>
-        </label>
+        </select>
       </form>
 
-      <details open style="margin:8px 0 12px;">
+      <details open>
         <summary>Ajouter un produit</summary>
-        <form method="post" action="?r=dashboard/saveProduct" class="row-form" style="margin-top:8px;">
+        <form method="post" action="?r=dashboard/saveProduct" class="row-form">
           <input type="hidden" name="id" value="">
-          <label>Catégorie
-            <select name="category_id" required>
+          <label for="prod-category-new" class="visually-hidden">Catégorie</label>
+          <select id="prod-category-new" name="category_id" required>
               <?php foreach (($categories ?? []) as $c): ?>
                 <option value="<?= (int)$c['id'] ?>" <?= ((int)($category_id ?? 0) === (int)$c['id']) ? 'selected' : '' ?>><?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?></option>
               <?php endforeach; ?>
-            </select>
-          </label>
-          <input type="text" name="name" placeholder="Nom" required>
-          <input type="number" step="0.01" name="base_price" placeholder="Prix" style="width:120px;" required>
-          <input type="text" name="image_url" placeholder="URL de l'image" style="min-width:220px;">
-          <input type="number" name="sort_order" placeholder="Ordre" style="width:90px;">
-          <label><input type="checkbox" name="is_available" checked> Disponible</label>
-          <div style="width:100%"></div>
-          <textarea name="description" placeholder="Description (optionnel)"></textarea>
-          <button class="btn" type="submit">Ajouter</button>
+          </select>
+          <label for="prod-name-new" class="visually-hidden">Nom</label>
+          <input id="prod-name-new" class="grow" type="text" name="name" placeholder="Nom" required>
+          <label for="prod-price-new" class="visually-hidden">Prix</label>
+          <input id="prod-price-new" class="w-xs" type="number" step="0.01" name="base_price" placeholder="Prix" required>
+          <label for="prod-image-new" class="visually-hidden">URL de l'image</label>
+          <input id="prod-image-new" class="grow" type="text" name="image_url" placeholder="URL de l'image">
+          <label for="prod-order-new" class="visually-hidden">Ordre</label>
+          <input id="prod-order-new" class="w-xxs" type="number" name="sort_order" placeholder="Ordre">
+          <label for="prod-desc-new" class="visually-hidden">Description (optionnel)</label>
+          <textarea id="prod-desc-new" class="grow" name="description" placeholder="Description (optionnel)"></textarea>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Ajouter</button>
+          </div>
         </form>
       </details>
 
       <table>
-        <tr>
-          <th>Produit</th><th>Catégorie</th><th>Prix</th><th>Ordre</th><th>Dispo</th><th>Image</th><th>Actions</th>
-        </tr>
-        <?php foreach (($products ?? []) as $p): ?>
+        <thead>
           <tr>
-            <td style="min-width:200px;">
+            <th>Produit</th>
+            <th>Catégorie</th>
+            <th>Prix</th>
+            <th>Ordre</th>
+            <th>Statut</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($products ?? [])): ?>
+          <tr>
+            <td colspan="7" class="muted">Aucun produit à afficher.</td>
+          </tr>
+        <?php else: foreach (($products ?? []) as $p): ?>
+          <tr>
+            <td>
               <form method="post" action="?r=dashboard/saveProduct" class="row-form">
                 <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
-                <input type="text" name="name" value="<?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?>" required>
+                <label class="visually-hidden" for="prod-name-<?= (int)$p['id'] ?>">Nom</label>
+                <input id="prod-name-<?= (int)$p['id'] ?>" class="grow" type="text" name="name" value="<?= htmlspecialchars($p['name'], ENT_QUOTES, 'UTF-8') ?>" required>
             </td>
             <td>
                 <select name="category_id">
@@ -124,30 +148,36 @@
                 </select>
             </td>
             <td>
-                <input type="number" step="0.01" name="base_price" value="<?= htmlspecialchars(number_format((float)$p['base_price'], 2, '.', ''), ENT_QUOTES, 'UTF-8') ?>" style="width:120px;" required>
+                <label class="visually-hidden" for="prod-price-<?= (int)$p['id'] ?>">Prix</label>
+                <input id="prod-price-<?= (int)$p['id'] ?>" class="w-xs" type="number" step="0.01" name="base_price" value="<?= htmlspecialchars(number_format((float)$p['base_price'], 2, '.', ''), ENT_QUOTES, 'UTF-8') ?>" required>
             </td>
             <td>
-                <input type="number" name="sort_order" value="<?= htmlspecialchars((string)$p['sort_order'], ENT_QUOTES, 'UTF-8') ?>" style="width:90px;">
+                <label class="visually-hidden" for="prod-order-<?= (int)$p['id'] ?>">Ordre</label>
+                <input id="prod-order-<?= (int)$p['id'] ?>" class="w-xxs" type="number" name="sort_order" value="<?= htmlspecialchars((string)$p['sort_order'], ENT_QUOTES, 'UTF-8') ?>">
             </td>
             <td>
-                <label><input type="checkbox" name="is_available" <?= ((int)$p['is_available'] === 1) ? 'checked' : '' ?>> Oui</label>
-            </td>
-            <td style="min-width:240px;">
-                <input type="text" name="image_url" value="<?= htmlspecialchars((string)$p['image_url'], ENT_QUOTES, 'UTF-8') ?>" placeholder="URL image">
+              <?php $pAvail = (int)$p['is_available'] === 1; ?>
+              <span class="badge" style="background:<?= $pAvail ? '#16a34a' : '#dc2626' ?>; color:#fff;">
+                <?= $pAvail ? 'Disponible' : 'Indisponible' ?>
+              </span>
             </td>
             <td>
-                <button class="btn" type="submit">Enregistrer</button>
+                <label class="visually-hidden" for="prod-image-<?= (int)$p['id'] ?>">Image</label>
+                <input id="prod-image-<?= (int)$p['id'] ?>" class="grow" type="text" name="image_url" value="<?= htmlspecialchars((string)$p['image_url'], ENT_QUOTES, 'UTF-8') ?>" placeholder="URL image">
+            </td>
+            <td>
+                <button class="btn btn-primary" type="submit">Enregistrer</button>
               </form>
-              <form method="post" action="?r=dashboard/toggleProduct" style="display:inline-block; margin-left:6px;">
+              <form method="post" action="?r=dashboard/toggleProduct" class="inline">
                 <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
-                <input type="hidden" name="category_id" value="<?= (int)$p['category_id'] ?>">
-                <button class="btn secondary" type="submit">Basculer</button>
+                <button class="btn btn-secondary" type="submit"><?= ((int)$p['is_available'] === 1) ? 'Désactiver' : 'Activer' ?></button>
               </form>
             </td>
           </tr>
-        <?php endforeach; ?>
+        <?php endforeach; endif; ?>
+        </tbody>
       </table>
-    </div>
-  </div>
+    </section>
+  </main>
 </body>
 </html>

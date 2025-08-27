@@ -1,6 +1,6 @@
 # ☕ Moroccan Café Self-Ordering Kiosk – MVP Specification
 
-This document defines the minimum viable product (MVP) for a self‑ordering kiosk for a Moroccan café. It focuses on essentials only: a simple, reliable customer flow, basic admin operations, receipt printing, and a minimal database.
+This document defines the minimum viable product (MVP) for a self‑ordering kiosk for a Moroccan café. It focuses on essentials only: a simple, reliable customer flow, basic admin operations, receipt printing, and a minimal database. The backend is a small PHP MVC with query‑param routing via `public/index.php`.
 
 ---
 
@@ -8,7 +8,7 @@ This document defines the minimum viable product (MVP) for a self‑ordering kio
 
 * Single kiosk, in‑café ordering only.
 * Categories: Hot Drinks, Cold Drinks, Pastries. (No sandwiches, no packs.)
-* Customers browse, customize basics, pay (Card or Counter/Cash), get an order number and printed receipt.
+* Customers browse products, pay (Card or Counter/Cash), get an order number; the kiosk shows a confirmation screen (large order number). Admin can reprint a receipt from the dashboard.
 * Admin: login, manage menu (basic CRUD + availability), view active orders and update statuses.
 
 ---
@@ -19,11 +19,17 @@ This document defines the minimum viable product (MVP) for a self‑ordering kio
 
 * Browse categories (Hot Drinks, Cold Drinks, Pastries).
 * View products (name, image, price).
-* Product detail with basic, per‑item customizations (see Menu below).
+* Product detail (no per‑item customizations in MVP).
 * Add to cart, edit quantity/remove, see totals.
 * Choose order type: Eat‑In or Takeaway.
-* Pay method: Card (via standalone terminal) or Counter (cash at cashier).
-* Show confirmation screen with order number and print receipt.
+* Pay method: Card or Counter (cash at cashier).
+* Show confirmation screen with large order number; no auto print popup.
+
+### Écran de collecte
+
+* Écran client toujours allumé (navigateur) affichant les numéros « En préparation » et « Prêtes ».
+* Rafraîchissement automatique toutes les 3 secondes et son léger quand une commande devient « Prête » (fichier audio placeholder prêt).
+* Message permanent: « Récupérez votre reçu au kiosque ».
 
 ### Admin (Web Dashboard)
 
@@ -59,19 +65,17 @@ This document defines the minimum viable product (MVP) for a self‑ordering kio
    * On confirm: create order with status=awaiting_payment and assign display number
 
 6) Payment and Confirmation
-   * Card:
-     * Show amount and "Waiting for card payment" screen
-     * Dashboard marks Paid in the dashboard; kiosk polls order status every ~3s (timeout after ~2 minutes). On Paid → show Order Number and print receipt. On timeout/failure → offer Retry or Switch to Counter.
-     * If failure: offer Retry or Switch to Counter
-   * Counter:
-     * Immediately show Order Number and print receipt with "Pay at counter"; cashier marks Paid later in the dashboard.
-   * Show big Order Number
-   * Print receipt (thermal). If printer fails, show on‑screen number; staff can assist.
-   * Auto return to Welcome after 10–15s
+  * Card (two modes, configured by `app/Config/app.php` → `payment_provider`):
+    * `simulator` (default): in‑app test terminal at `?r=order/startTestPayment&id=...` with Approve/Decline actions. On Approve → order is marked `paid` and kiosk shows the big Order Number.
+    * `terminal`: standalone terminal flow. Kiosk shows "Waiting for card payment"; staff marks Paid in admin. Kiosk polls `?r=order/pollStatus&id=...` every ~3s. On Paid → show the big Order Number. On timeout/failure → offer Retry or Switch to Counter.
+  * Counter:
+    * Immediately show the big Order Number with clear message. Cashier/staff can mark Paid later in the dashboard.
+  * Receipt: auto‑printed by the kiosk (no on‑screen print button or popup). If printer fails, the on‑screen number is the fallback; staff assists.
+  * Auto return to Welcome after 10–15s (configurable via `confirm_return_seconds`).
 
 ---
 
-## 🧾 Receipt Printing (MVP)
+## 🧾 Receipt
 
 Printed fields:
 
@@ -80,17 +84,20 @@ Printed fields:
 * Date/time
 * Items + qty
 * Total + payment method (Card/Counter)
+* Statut de paiement: « Payé » (carte) ou « En attente — payer au comptoir » (cash)
 * Amounts displayed in MAD (suffix "DH") using French number format (e.g., 12,50 DH)
 * For Counter payments, include a clear label: "Pay at counter"
 * Thank you/footer
 
-If printer error: show error toast and keep the on‑screen number visible.
+Behavior:
+* Admin reprint page `?r=order/printReceipt&id=...` renders the receipt and exposes a manual "Imprimer" button (no auto popup). A link back to the dashboard is provided.
+* Kiosk confirmation shows the order number; staff can assist if printing is needed.
 
 ---
 
 ## 🧺 Menu (Morocco‑focused)
 
-Customizations are minimal and per‑item. Prices may adjust for size/extras.
+MVP shows product name, image, and base price only. Per‑item customizations are out of scope for this MVP and can be added later.
 
 ### Hot Drinks
 
@@ -207,11 +214,11 @@ Customizations are minimal and per‑item. Prices may adjust for size/extras.
 * `quantity` (int)
 * `price_each` (decimal(6,2))
 * `line_total` (decimal(7,2))
-* `options_json` (json)  // chosen customizations per item
+* `options_json` (json)  // reserved for future customizations; unused in current MVP (stored as NULL)
 
 Notes:
-* No separate options tables in MVP. All selections stored as JSON on the order item. Price modifiers are baked into `price_each`/`line_total` at checkout.
-* Constraints: FK `order_items.order_id` ON DELETE CASCADE; non-negative checks on prices; `quantity >= 1`; unique (`display_date`,`display_number`).
+* No separate options tables in MVP. When/if customizations are added, selections can be stored as JSON on the order item; for now `options_json` remains NULL.
+* Constraints: FK `order_items.order_id` ON DELETE CASCADE; `products.category_id` ON DELETE RESTRICT; `order_items.product_id` ON DELETE RESTRICT; non-negative checks on prices; `quantity >= 1`; unique (`display_date`,`display_number`).
 * Default ordering: if `sort_order` is NULL, order by `name` ASC; if set, order by `sort_order` ASC then `name` ASC.
 * MySQL specifics: InnoDB engine; charset `utf8mb4` (`utf8mb4_unicode_ci`). Use `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` and `ON UPDATE CURRENT_TIMESTAMP` for audit fields.
 * Data types: use `ENUM` for bounded fields (e.g., `orders.status`, `orders.payment_method`, `orders.order_type`); `JSON` type for `order_items.options_json`.
@@ -229,17 +236,17 @@ Notes:
 
 ### Software
 * Kiosk UI: HTML, CSS, minimal JavaScript (touch‑optimized)
-* Backend: Pure PHP (REST endpoints)
+* Backend: Pure PHP MVC with query‑param routing via `public/index.php` (e.g., `?r=controller/action`)
 * Database: MySQL 8
 * Admin Dashboard: HTML/CSS/JS served by the same PHP backend (basic auth, orders board, menu CRUD)
 
 ### Localization & Timezone
-* UI language: French; currency suffix "DH" with French number formatting (e.g., 12,50 DH)
-* Timezone: Africa/Casablanca (used for timestamps and daily order-number reset)
+* UI language: French; currency suffix "DH" with French number formatting (e.g., 12,50 DH). See `app/Config/app.php` keys `currency_suffix` and `number_locale`.
+* Timezone: Africa/Casablanca (used for timestamps and daily order-number reset). See `app/Config/app.php` key `timezone`.
 
 ### Error Handling
-* Card payment with standalone terminal (local Morocco): kiosk shows amount and waits while the dashboard marks Paid; kiosk polls order status. On Paid → proceed; on failure → allow Retry or Switch to Counter.
-* Printer error → show on‑screen order number; staff assists
+* Card payment: either simulated in‑app (`payment_provider=simulator`) or via standalone terminal with admin marking Paid (`payment_provider=terminal`). Kiosk may poll order status via `?r=order/pollStatus&id=...`.
+* Reprint via admin receipt page if needed; confirmation screen serves as fallback
 * Inactivity timeout → cancel order and reset to Welcome
 
 ---
@@ -250,13 +257,20 @@ orders.status transitions:
 * awaiting_payment → paid → preparing → ready → completed
 * cancelled (explicit cancel or timeout)
 
+Auto‑cancel rule:
+* Orders that remain `awaiting_payment` older than configurable minutes are automatically marked `cancelled` when the admin orders page loads. The window is set by `app/Config/app.php` → `auto_cancel_minutes` (default 15).
+
 ---
 
 ## 📋 Admin/Manager (Minimal)
 
 * Login
-* Active orders board (update statuses)
-* Menu management: add/edit/remove products, toggle availability
+* Active orders board (grouped by status, search by number, scope Today/All, auto‑refresh 15s)
+  * For `awaiting_payment`: only two buttons are shown — “Marquer payé” and “Annuler”.
+  * For other statuses: MVP generic select to set status to paid/preparing/ready/completed/cancelled. Invalid transitions from awaiting_payment are blocked server‑side.
+  * Status badges are shown per order; “Imprimer” is hidden for cancelled.
+* Menu management: add/edit products and categories; toggle activation/availability via “Activer/Désactiver” buttons. Status badges replace activation checkboxes.
+  * Product toggle redirects to unfiltered menu; save product keeps filter after edit but not after create.
 
 ---
 

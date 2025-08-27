@@ -1,20 +1,20 @@
 # Moroccan Café Kiosk – Project Defaults
 
-This document codifies the default stack, conventions, and rules for the MVP implementation. It complements `ai_coding_factors.md` and removes ambiguity during development.
+This document codifies the default stack, conventions, and rules for the MVP implementation. It removes ambiguity during development.
 
 ## 1) Stack & Runtime
 - Language: PHP 8.2 (pure PHP, no framework)
 - Web server: Apache (XAMPP)
 - Database: MySQL 8.x (InnoDB, utf8mb4)
 - Front-end: Vanilla HTML/CSS/JS (no Bootstrap, no build tools)
-- Printing: Browser print to thermal; on‑screen fallback
+- Printing: Admin reprint page `?r=order/printReceipt&id=...` uses a manual "Imprimer" button (no auto popup). Kiosk shows a confirmation screen with large order number; no auto‑print in-browser.
 - Timezone: Africa/Casablanca
 - Locale/UI: French; currency suffix: "DH"
 
 ## 2) Architecture
 - Pattern: Conventional MVC
 - Entry point: `public/index.php` (single front controller)
-- Routing: Query param or path style — default: `?r=controller/action` with optional `id`
+- Routing: Query-param style: `?r=controller/action` with optional `id`
 - Layers:
   - Controllers: `app/Controllers/*Controller.php`
   - Services: `app/Services/*Service.php`
@@ -53,10 +53,14 @@ project/
 - Display number: `display_number INT`, `display_date DATE`, unique key on (`display_date`, `display_number`), daily reset at local midnight
 - Foreign keys: `ON DELETE CASCADE` from `order_items` to `orders`
 
+Notes on deletes in UI (MVP):
+- No delete buttons in admin for categories/products. Use activation/availability toggles instead.
+- DB constraints prevent deleting categories with products and products referenced by order items.
+
 ## 7) Error Handling
 - Controller level: try/catch with user‑safe messages
 - Display: suppress detailed errors in production; show concise French messages to users
-- Fallback: if printer fails, show large order number on screen
+- Printing: staff can reprint from admin the receipt page and click "Imprimer"; confirmation screen (large order number) serves as fallback for customers.
 
 ## 8) Security (MVP‑minimal)
 - Admin auth: email + password using `password_hash()`/`password_verify()` (Argon2id if available)
@@ -72,11 +76,22 @@ project/
 
 ## 10) Payment & Polling
 - Terminal: standalone (cashier dashboard marks Paid)
-- Polling: kiosk polls `orders.status` every 3s; global timeout 2 minutes; offer Retry/Switch to Counter on failure
+- Polling: kiosk polls `orders.status` every 3s during card payment wait; global timeout ~2 minutes; offer Retry/Switch to Counter on failure
 
 ## 15) Environment Config
 - Config files: `app/Config/app.php`, `app/Config/database.php`
-- Sample database config keys: `host`, `port`, `database`, `username`, `password`, `charset=utf8mb4`
+- App config keys (`app/Config/app.php`):
+  - `env`: `dev` | `prod`
+  - `timezone`: e.g., `Africa/Casablanca`
+  - `locale`: e.g., `fr_MA`
+  - `kiosk_idle_seconds`: default 90
+  - `confirm_return_seconds`: default 12
+  - `auto_cancel_minutes`: default 15
+  - `currency_suffix`: default `DH`
+  - `number_locale`: e.g., `fr_FR`
+  - `cafe_name`, `cafe_address`, `cafe_phone`
+  - `payment_provider`: `simulator` (default) | `terminal`
+- Database config keys (`app/Config/database.php`): `host`, `port`, `database`, `username`, `password`, `charset=utf8mb4`
 
 ## 16) Alignments with docs
 - Use MySQL (not PostgreSQL)

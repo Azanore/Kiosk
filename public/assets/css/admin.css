@@ -1,0 +1,51 @@
+/* Admin Theme: professional, flat, minimal */
+
+:root {
+  --admin-accent: var(--color-accent);
+}
+
+body.admin {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--color-bg);
+}
+
+/* Header and navigation already styled via app.css .admin-header/.admin-nav */
+
+/* Panels and sections (reinforce flat look) */
+.admin .panel { background: var(--color-surface); }
+
+/* Tables */
+.admin table thead th { background: var(--color-surface); }
+.admin table tbody tr:nth-child(even) { background: #fbfbfc; }
+
+/* Buttons */
+.admin .btn { background: #f3f4f6; color: var(--color-text); border: 1px solid var(--color-border); transition: transform .12s ease; }
+.admin .btn:hover { transform: scale(0.95); }
+.admin .btn:active { transform: scale(0.93); }
+.admin .btn-primary { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+.admin .btn-secondary { background: #64748b; color: #fff; border-color: #64748b; }
+.admin .btn-success { background: #16a34a; color: #fff; border-color: #16a34a; }
+.admin .btn-warning { background: #f59e0b; color: #111; border-color: #f59e0b; }
+.admin .btn-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
+.admin .btn-outline { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+.admin .btn-sm { padding: 8px 10px; font-size: 14px; }
+.admin .btn-lg { padding: 14px 18px; font-size: 18px; }
+
+/* Links */
+.admin a { color: #0ea5e9; text-decoration: none; display: inline-block; transition: transform .12s ease; }
+.admin a:hover { text-decoration: none; transform: scale(0.95); }
+.admin a.danger { color: var(--danger); }
+
+/* Forms */
+.admin input, .admin select, .admin textarea { font-size: 14px; }
+.admin .row-form { align-items: center; }
+
+/* Utility */
+.refresh-floating { position: fixed; right: 16px; bottom: 16px; z-index: 1000; }
+
+/* Badges by semantic colors (map inline colors to classes if used later) */
+.badge.neutral { background: #6b7280; color: #fff; }
+.badge.info    { background: #2563eb; color: #fff; }
+.badge.success { background: #16a34a; color: #fff; }
+.badge.warning { background: #d97706; color: #fff; }
+.badge.danger  { background: #dc2626; color: #fff; }
