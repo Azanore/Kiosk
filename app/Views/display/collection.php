@@ -25,7 +25,10 @@
     </div>
   </main>
 
-  <audio id="readySound" src="assets/audio/ready.mp3" preload="auto"></audio>
+  <audio id="readySound" src="/Kiosk/public/assets/audio/ready.mp3" preload="auto"></audio>
+  <div id="audioNotification" style="display:none; position:fixed; top:10px; right:10px; background:rgba(0,0,0,0.8); color:white; padding:10px; border-radius:5px;">
+    New order ready! Click to play sound.
+  </div>
 
   <script>
     const prepEl = document.getElementById('prep');
@@ -60,7 +63,28 @@
           if (!lastReadySet.has(n)) { hasNew = true; break; }
         }
         if (hasNew) {
-          try { snd.currentTime = 0; snd.play().catch(()=>{}); } catch(e) {}
+          console.log('New order ready, attempting to play sound...');
+          try { 
+            snd.currentTime = 0;
+            const playPromise = snd.play();
+            
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => console.log('Audio playback started successfully'))
+                .catch(e => {
+                  console.log('Showing notification instead');
+                  const notif = document.getElementById('audioNotification');
+                  notif.style.display = 'block';
+                  notif.onclick = function() {
+                    snd.play().then(() => notif.style.display = 'none');
+                  };
+                  // Auto-hide after 10 seconds
+                  setTimeout(() => notif.style.display = 'none', 10000);
+                });
+            }
+          } catch(e) {
+            console.error('Error with audio:', e);
+          }
         }
         lastReadySet = nowSet;
       } catch (e) {
