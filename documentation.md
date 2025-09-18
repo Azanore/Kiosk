@@ -179,7 +179,6 @@ MVP shows product name, image, and base price only. Per‑item customizations ar
 * `id` (PK)
 * `name` (varchar)
 * `is_active` (boolean)
-* `sort_order` (int, optional)
 
 ### `products`
 
@@ -190,7 +189,6 @@ MVP shows product name, image, and base price only. Per‑item customizations ar
 * `base_price` (decimal(6,2))
 * `image_url` (varchar, optional)
 * `is_available` (boolean)
-* `sort_order` (int, optional)
 
 ### `orders`
 
@@ -219,7 +217,7 @@ MVP shows product name, image, and base price only. Per‑item customizations ar
 Notes:
 * No separate options tables in MVP. When/if customizations are added, selections can be stored as JSON on the order item; for now `options_json` remains NULL.
 * Constraints: FK `order_items.order_id` ON DELETE CASCADE; `products.category_id` ON DELETE RESTRICT; `order_items.product_id` ON DELETE RESTRICT; non-negative checks on prices; `quantity >= 1`; unique (`display_date`,`display_number`).
-* Default ordering: if `sort_order` is NULL, order by `name` ASC; if set, order by `sort_order` ASC then `name` ASC.
+* Default ordering: items are ordered alphabetically by `name` ASC.
 * MySQL specifics: InnoDB engine; charset `utf8mb4` (`utf8mb4_unicode_ci`). Use `TIMESTAMP DEFAULT CURRENT_TIMESTAMP` and `ON UPDATE CURRENT_TIMESTAMP` for audit fields.
 * Data types: use `ENUM` for bounded fields (e.g., `orders.status`, `orders.payment_method`, `orders.order_type`); `JSON` type for `order_items.options_json`.
 * Timezone: Africa/Casablanca for timestamps and daily reset of `display_number` (enforced in app logic).

@@ -24,8 +24,6 @@
         <input type="hidden" name="id" value="">
         <label for="cat-name-new" class="visually-hidden">Nom</label>
         <input id="cat-name-new" class="grow" type="text" name="name" placeholder="Nom de la catégorie" required>
-        <label for="cat-order-new" class="visually-hidden">Ordre</label>
-        <input id="cat-order-new" class="w-xxs" type="number" name="sort_order" placeholder="Ordre">
         <label for="cat-image-new" class="visually-hidden">Image</label>
         <input id="cat-image-new" class="grow" type="text" name="image_url" placeholder="/assets/img/cat_hot.jpg">
         <div class="actions">
@@ -36,7 +34,6 @@
         <thead>
           <tr>
             <th>Nom</th>
-            <th>Ordre</th>
             <th>Statut</th>
             <th>Image</th>
             <th>Actions</th>
@@ -45,7 +42,7 @@
         <tbody>
         <?php if (empty($categories ?? [])): ?>
           <tr>
-            <td colspan="5" class="muted">Aucune catégorie pour le moment.</td>
+            <td colspan="4" class="muted">Aucune catégorie pour le moment.</td>
           </tr>
         <?php else: foreach (($categories ?? []) as $c): ?>
           <tr>
@@ -54,10 +51,6 @@
                 <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
                 <label class="visually-hidden" for="cat-name-<?= (int)$c['id'] ?>">Nom</label>
                 <input id="cat-name-<?= (int)$c['id'] ?>" class="grow" type="text" name="name" value="<?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?>" required>
-            </td>
-            <td>
-                <label class="visually-hidden" for="cat-order-<?= (int)$c['id'] ?>">Ordre</label>
-                <input id="cat-order-<?= (int)$c['id'] ?>" class="w-xxs" type="number" name="sort_order" value="<?= htmlspecialchars((string)$c['sort_order'], ENT_QUOTES, 'UTF-8') ?>">
             </td>
             <td>
               <?php $catActive = (int)$c['is_active'] === 1; ?>
@@ -112,8 +105,6 @@
           <input id="prod-price-new" class="w-xs" type="number" step="0.01" name="base_price" placeholder="Prix" required>
           <label for="prod-image-new" class="visually-hidden">URL de l'image</label>
           <input id="prod-image-new" class="grow" type="text" name="image_url" placeholder="URL de l'image">
-          <label for="prod-order-new" class="visually-hidden">Ordre</label>
-          <input id="prod-order-new" class="w-xxs" type="number" name="sort_order" placeholder="Ordre">
           <label for="prod-desc-new" class="visually-hidden">Description (optionnel)</label>
           <textarea id="prod-desc-new" class="grow" name="description" placeholder="Description (optionnel)"></textarea>
           <div class="actions">
@@ -128,7 +119,6 @@
             <th>Produit</th>
             <th>Catégorie</th>
             <th>Prix</th>
-            <th>Ordre</th>
             <th>Statut</th>
             <th>Image</th>
             <th>Actions</th>
@@ -137,7 +127,7 @@
         <tbody>
         <?php if (empty($products ?? [])): ?>
           <tr>
-            <td colspan="7" class="muted">Aucun produit à afficher.</td>
+            <td colspan="6" class="muted">Aucun produit à afficher.</td>
           </tr>
         <?php else: foreach (($products ?? []) as $p): ?>
           <tr>
@@ -157,10 +147,6 @@
             <td>
                 <label class="visually-hidden" for="prod-price-<?= (int)$p['id'] ?>">Prix</label>
                 <input id="prod-price-<?= (int)$p['id'] ?>" class="w-xs" type="number" step="0.01" name="base_price" value="<?= htmlspecialchars(number_format((float)$p['base_price'], 2, '.', ''), ENT_QUOTES, 'UTF-8') ?>" required>
-            </td>
-            <td>
-                <label class="visually-hidden" for="prod-order-<?= (int)$p['id'] ?>">Ordre</label>
-                <input id="prod-order-<?= (int)$p['id'] ?>" class="w-xxs" type="number" name="sort_order" value="<?= htmlspecialchars((string)$p['sort_order'], ENT_QUOTES, 'UTF-8') ?>">
             </td>
             <td>
               <?php $pAvail = (int)$p['is_available'] === 1; ?>

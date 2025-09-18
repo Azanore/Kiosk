@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(191) NOT NULL,
   `is_active` TINYINT(1) NOT NULL DEFAULT 1,
-  `sort_order` INT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -36,7 +35,6 @@ CREATE TABLE IF NOT EXISTS `products` (
   `base_price` DECIMAL(6,2) NOT NULL DEFAULT 0.00,
   `image_url` VARCHAR(255) NULL,
   `is_available` TINYINT(1) NOT NULL DEFAULT 1,
-  `sort_order` INT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_products_category` (`category_id`),
   CONSTRAINT `fk_products_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE

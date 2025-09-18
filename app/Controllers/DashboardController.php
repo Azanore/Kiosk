@@ -80,14 +80,14 @@ class DashboardController extends BaseController
         $this->requireAdmin();
         $pdo = DB::pdo();
         // Categories
-        $categories = $pdo->query("SELECT id, name, image_url, is_active, sort_order FROM categories ORDER BY COALESCE(sort_order,9999), name")->fetchAll();
+        $categories = $pdo->query("SELECT id, name, image_url, is_active FROM categories ORDER BY name")->fetchAll();
         // Products (optionally filtered by category)
         $catId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
         if ($catId > 0) {
-            $stmt = $pdo->prepare("SELECT p.id, p.category_id, p.name, p.base_price, p.is_available, p.sort_order, c.name AS category_name, p.image_url FROM products p JOIN categories c ON c.id=p.category_id WHERE p.category_id = ? ORDER BY COALESCE(p.sort_order,9999), p.name LIMIT 300");
+            $stmt = $pdo->prepare("SELECT p.id, p.category_id, p.name, p.base_price, p.is_available, c.name AS category_name, p.image_url FROM products p JOIN categories c ON c.id=p.category_id WHERE p.category_id = ? ORDER BY p.name LIMIT 300");
             $stmt->execute([$catId]);
         } else {
-            $stmt = $pdo->query("SELECT p.id, p.category_id, p.name, p.base_price, p.is_available, p.sort_order, c.name AS category_name, p.image_url FROM products p JOIN categories c ON c.id=p.category_id ORDER BY c.name, COALESCE(p.sort_order,9999), p.name LIMIT 300");
+            $stmt = $pdo->query("SELECT p.id, p.category_id, p.name, p.base_price, p.is_available, c.name AS category_name, p.image_url FROM products p JOIN categories c ON c.id=p.category_id ORDER BY c.name, p.name LIMIT 300");
         }
         $products = $stmt->fetchAll();
         $this->render('admin/menu', [ 'categories' => $categories, 'products' => $products, 'category_id' => $catId ]);
@@ -110,14 +110,13 @@ class DashboardController extends BaseController
         } else {
             $isActive = 1;
         }
-        $sort = isset($_POST['sort_order']) && $_POST['sort_order'] !== '' ? (int)$_POST['sort_order'] : null;
         if ($name === '') { http_response_code(400); echo 'Nom requis'; return; }
         if ($id > 0) {
-            $stmt = $pdo->prepare("UPDATE categories SET name = ?, image_url = ?, is_active = ?, sort_order = ? WHERE id = ?");
-            $stmt->execute([$name, ($imageUrl !== '' ? $imageUrl : null), $isActive, $sort, $id]);
+            $stmt = $pdo->prepare("UPDATE categories SET name = ?, image_url = ?, is_active = ? WHERE id = ?");
+            $stmt->execute([$name, ($imageUrl !== '' ? $imageUrl : null), $isActive, $id]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO categories (name, image_url, is_active, sort_order) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$name, ($imageUrl !== '' ? $imageUrl : null), $isActive, $sort]);
+            $stmt = $pdo->prepare("INSERT INTO categories (name, image_url, is_active) VALUES (?, ?, ?)");
+            $stmt->execute([$name, ($imageUrl !== '' ? $imageUrl : null), $isActive]);
         }
         header('Location: ?r=dashboard/menu');
     }
@@ -154,16 +153,15 @@ class DashboardController extends BaseController
         } else {
             $isAvailable = 1;
         }
-        $sort = isset($_POST['sort_order']) && $_POST['sort_order'] !== '' ? (int)$_POST['sort_order'] : null;
         if ($categoryId <= 0 || $name === '') { http_response_code(400); echo 'Paramètres requis'; return; }
         if ($id > 0) {
-            $stmt = $pdo->prepare("UPDATE products SET category_id=?, name=?, description=?, base_price=?, image_url=?, is_available=?, sort_order=? WHERE id=?");
-            $stmt->execute([$categoryId, $name, $description, $price, $image, $isAvailable, $sort, $id]);
+            $stmt = $pdo->prepare("UPDATE products SET category_id=?, name=?, description=?, base_price=?, image_url=?, is_available=? WHERE id=?");
+            $stmt->execute([$categoryId, $name, $description, $price, $image, $isAvailable, $id]);
             // Keep context when editing an existing product
             header('Location: ?r=dashboard/menu&category_id=' . $categoryId);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO products (category_id, name, description, base_price, image_url, is_available, sort_order) VALUES (?,?,?,?,?,?,?)");
-            $stmt->execute([$categoryId, $name, $description, $price, $image, $isAvailable, $sort]);
+            $stmt = $pdo->prepare("INSERT INTO products (category_id, name, description, base_price, image_url, is_available) VALUES (?,?,?,?,?,?)");
+            $stmt->execute([$categoryId, $name, $description, $price, $image, $isAvailable]);
             // After creating a new product, do not filter – the select controls filtering
             header('Location: ?r=dashboard/menu');
         }
