@@ -12,9 +12,11 @@
     <header class="kiosk-header">
       <div class="kiosk-container">
         <div class="kiosk-brand"><span class="kiosk-dot"></span> Moroccan Café</div>
-        <div class="kiosk-steps" style="margin-left:auto;">
-          <a class="kiosk-step" href="?r=kiosk/cart">Panier</a>
+        <div class="kiosk-current-page">
           <div class="kiosk-step is-active">Paiement</div>
+        </div>
+        <div class="kiosk-return">
+          <a class="kiosk-step" href="?r=kiosk/cart">Panier</a>
         </div>
       </div>
     </header>

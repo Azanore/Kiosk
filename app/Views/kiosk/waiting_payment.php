@@ -12,8 +12,11 @@
     <header class="kiosk-header">
       <div class="kiosk-container">
         <div class="kiosk-brand"><span class="kiosk-dot"></span> Moroccan Café</div>
-        <div class="kiosk-steps" style="margin-left:auto;">
+        <div class="kiosk-current-page">
           <div class="kiosk-step is-active">Paiement</div>
+        </div>
+        <div class="kiosk-return">
+          <!-- No return button for payment waiting -->
         </div>
       </div>
     </header>

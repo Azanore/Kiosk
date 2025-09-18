@@ -12,8 +12,10 @@
     <header class="kiosk-header">
       <div class="kiosk-container">
         <div class="kiosk-brand"><span class="kiosk-dot"></span> Moroccan Café</div>
-        <div class="kiosk-steps" style="margin-left:auto;">
+        <div class="kiosk-current-page">
           <div class="kiosk-step is-active">Catégories</div>
+        </div>
+        <div class="kiosk-return">
           <a class="kiosk-step" href="?r=kiosk/welcome">Accueil</a>
         </div>
       </div>
@@ -28,12 +30,12 @@
         </div>
       <?php else: ?>
       <?php foreach ($categories as $c): ?>
-        <div class="card kiosk-card clickable">
+        <div class="card kiosk-card" onclick="window.location.href='?r=kiosk/products&id=<?= (int)$c['id'] ?>'">
           <?php if (!empty($c['image_url'])): ?>
             <img src="<?= $baseUrl(ltrim($c['image_url'], '/')) ?>" alt="<?= htmlspecialchars('Photo de ' . $c['name'], ENT_QUOTES, 'UTF-8') ?>">
           <?php endif; ?>
           <div class="name"><?= htmlspecialchars($c['name'], ENT_QUOTES, 'UTF-8') ?></div>
-          <a class="btn kiosk-btn kiosk-btn-accent" href="?r=kiosk/products&id=<?= (int)$c['id'] ?>">Voir</a>
+          <a class="btn kiosk-btn kiosk-btn-accent" href="?r=kiosk/products&id=<?= (int)$c['id'] ?>" onclick="event.stopPropagation();">Voir</a>
         </div>
       <?php endforeach; ?>
       <?php endif; ?>
@@ -46,6 +48,7 @@
       var timer = setTimeout(function(){ window.location.href='?r=kiosk/welcome'; }, idleMs);
       function reset(){ clearTimeout(timer); timer = setTimeout(function(){ window.location.href='?r=kiosk/welcome'; }, idleMs); }
       ['click','keydown','touchstart','mousemove'].forEach(function(ev){ document.addEventListener(ev, reset, {passive:true}); });
+
     })();
   </script>
 </body>
